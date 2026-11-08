@@ -2,3 +2,8 @@ apk/*
 !apk/.gitkeep
 *.pdf
 scratch/
+*.pyc
+__pycache__/
+output/
+config/iptv/output/
+config/iptv/test_output/

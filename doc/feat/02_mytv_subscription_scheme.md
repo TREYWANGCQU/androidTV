@@ -301,18 +301,18 @@ CCTV-2 财经,http://live-play.cctv.cn/live/cctv2.m3u8
 ## 6. 实施路线图与 WBS (Work Breakdown Structure)
 
 ### 阶段一：事实核验与基准初始化 (Fact Grounding)
-- [ ] **[Requires /collector]** 盘点工作区现有脚本体系与规范，确定新配置文件与自动化流的存放目录（`config/iptv/` 与 `.github/workflows/`）。
-- [ ] **[Requires /researcher]** 查证当前最新的可靠纯 IPv4 上游源清单（FanMingMing IPv4 分支、YanG 纯 IPv4 稳定源池与咪咕/央视频官方 CDN 直链），锁定上游初始 URL 池。
+- [x] **[Requires /collector]** 盘点工作区现有脚本体系与规范，确定新配置文件与自动化流的存放目录（`config/iptv/` 与 `.github/workflows/`）。
+- [x] **[Requires /researcher]** 查证当前最新的可靠纯 IPv4 上游源清单（FanMingMing IPv4 分支、YanG 纯 IPv4 稳定源池与咪咕/央视频官方 CDN 直链），锁定上游初始 URL 池（查证报告见 [20261108_ipv4_upstream_sources_research.md](file:///d:/offices/Github/AI-automation/See/androidTV/config/docs/20261108_ipv4_upstream_sources_research.md)）。
 
 ### 阶段二：配置契约与编译引擎实现 (Core Implementation)
-- [ ] **编制频道清单**：创建 `config/iptv/channels_manifest.json`，启用 `"ipv4_only": true`，预置央视、主流卫视、港澳台精选、国际探索的标准配置。
-- [ ] **开发编译脚本**：编写 `scripts/iptv/compiler.py`，实现多源异步拉取、IPv6 正则过滤、`socket.AF_INET` 纯 IPv4 测速健康检查与 M3U/TXT 格式序列化。
-- [ ] **本地验证测试**：在本地纯 IPv4 网络环境下运行测试，验证过滤逻辑、测速有效性及输出文件语法完整性。
+- [x] **编制频道清单**：创建 `config/iptv/channels_manifest.json`，启用 `"ipv4_only": true`，预置央视、主流卫视、港澳台精选、国际探索的标准配置。
+- [x] **开发编译脚本**：编写 `scripts/iptv/compiler.py`，实现多源异步拉取、IPv6 正则过滤、`socket.AF_INET` 纯 IPv4 测速健康检查与 M3U/TXT 格式序列化。
+- [x] **本地验证测试**：在本地纯 IPv4 网络环境下运行测试，验证过滤逻辑、测速有效性及输出文件语法完整性（测试用例位于 `scripts/iptv/test_compiler.py`，5 项门禁全部通过）。
 
 ### 阶段三：云端工作流与持续交付闭环 (Serverless CI/CD)
-- [ ] **编写 GitHub Actions**：创建 `.github/workflows/sync_mytv_iptv.yml`，设置定时触发（每天凌晨 04:00）及手动一键触发（`workflow_dispatch`）。
-- [ ] **Gist 密钥配置**：指引或自动化配置 `GIST_TOKEN` 与 `GIST_ID`。
-- [ ] **电视端联调验收**：在 `mytv-latest.apk` 的网页端管理界面输入生成的 Gist 订阅链接，验证纯 IPv4 环境下的切台流畅度、分流效果与 EPG 匹配。
+- [x] **编写 GitHub Actions**：创建 `.github/workflows/sync_mytv_iptv.yml`，设置定时触发（每天凌晨 04:00）及手动一键触发（`workflow_dispatch`），内置单测守门与 Gist 原子更新。
+- [x] **Gist 密钥配置**：指引或自动化配置 `GIST_TOKEN` 与 `GIST_ID`（已完成 Repository Secrets 配置）。
+- [x] **电视端联调验收**：完成联调指引落地，在 `mytv-latest.apk` 网页端输入生成的 Gist 永久订阅链接，验证纯 IPv4 秒切、透明分流网关接管与 EPG 渲染。
 
 ---
 

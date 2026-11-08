@@ -1,0 +1,458 @@
+{
+  "settings": {
+    "max_lines_per_channel": 4,
+    "probe_timeout_seconds": 3,
+    "concurrent_probes": 50,
+    "ipv4_only": true,
+    "epg_urls": [
+      "https://live.fanmingming.com/e.xml",
+      "https://epg.112114.xyz/pp.xml"
+    ],
+    "default_logo_base": "https://live.fanmingming.com/tv/"
+  },
+  "upstream_sources": [
+    {
+      "name": "FanMingMing-ITV-IPv4",
+      "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/itv.m3u",
+      "mirror": "https://live.fanmingming.com/tv/m3u/itv.m3u",
+      "type": "m3u",
+      "ipv4_verified": true
+    },
+    {
+      "name": "BurningC4-TV-IPV4",
+      "url": "https://raw.githubusercontent.com/BurningC4/Chinese-IPTV/master/TV-IPV4.m3u",
+      "type": "m3u",
+      "ipv4_verified": true
+    },
+    {
+      "name": "Guovin-IPv4",
+      "url": "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u",
+      "type": "m3u",
+      "ipv4_verified": true
+    },
+    {
+      "name": "YanG-Gather",
+      "url": "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u",
+      "mirror": "https://tv.iill.top/m3u/Gather",
+      "type": "m3u",
+      "ipv4_verified": false
+    },
+    {
+      "name": "iptv-org-hk",
+      "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
+      "type": "m3u",
+      "ipv4_verified": false
+    },
+    {
+      "name": "iptv-org-zho",
+      "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/zho.m3u",
+      "type": "m3u",
+      "ipv4_verified": false
+    }
+  ],
+  "groups": [
+    {
+      "name": "央视频道",
+      "channels": [
+        {
+          "name": "CCTV-1 综合",
+          "tvg_id": "CCTV1",
+          "tvg_name": "CCTV-1 综合",
+          "logo": "CCTV1.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?1(?!\\d)",
+            "CCTV-1\\s*综合"
+          ]
+        },
+        {
+          "name": "CCTV-2 财经",
+          "tvg_id": "CCTV2",
+          "tvg_name": "CCTV-2 财经",
+          "logo": "CCTV2.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?2(?!\\d)",
+            "CCTV-2\\s*财经"
+          ]
+        },
+        {
+          "name": "CCTV-3 综艺",
+          "tvg_id": "CCTV3",
+          "tvg_name": "CCTV-3 综艺",
+          "logo": "CCTV3.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?3(?!\\d)",
+            "CCTV-3\\s*综艺"
+          ]
+        },
+        {
+          "name": "CCTV-4 中文国际",
+          "tvg_id": "CCTV4",
+          "tvg_name": "CCTV-4 中文国际",
+          "logo": "CCTV4.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?4(?!\\d|k)",
+            "CCTV-4\\s*(中文国际|亚|欧|美)?"
+          ]
+        },
+        {
+          "name": "CCTV-5 体育",
+          "tvg_id": "CCTV5",
+          "tvg_name": "CCTV-5 体育",
+          "logo": "CCTV5.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?5(?!\\+|\\d)",
+            "CCTV-5\\s*体育(?!赛事)"
+          ]
+        },
+        {
+          "name": "CCTV-5+ 体育赛事",
+          "tvg_id": "CCTV5Plus",
+          "tvg_name": "CCTV-5+ 体育赛事",
+          "logo": "CCTV5Plus.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?5\\+",
+            "CCTV-5\\+\\s*体育赛事"
+          ]
+        },
+        {
+          "name": "CCTV-6 电影",
+          "tvg_id": "CCTV6",
+          "tvg_name": "CCTV-6 电影",
+          "logo": "CCTV6.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?6(?!\\d)",
+            "CCTV-6\\s*电影"
+          ]
+        },
+        {
+          "name": "CCTV-7 国防军事",
+          "tvg_id": "CCTV7",
+          "tvg_name": "CCTV-7 国防军事",
+          "logo": "CCTV7.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?7(?!\\d)",
+            "CCTV-7\\s*(国防军事|军事)"
+          ]
+        },
+        {
+          "name": "CCTV-8 电视剧",
+          "tvg_id": "CCTV8",
+          "tvg_name": "CCTV-8 电视剧",
+          "logo": "CCTV8.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?8(?!\\d|k)",
+            "CCTV-8\\s*电视剧"
+          ]
+        },
+        {
+          "name": "CCTV-9 纪录",
+          "tvg_id": "CCTV9",
+          "tvg_name": "CCTV-9 纪录",
+          "logo": "CCTV9.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?9(?!\\d)",
+            "CCTV-9\\s*纪录"
+          ]
+        },
+        {
+          "name": "CCTV-10 科教",
+          "tvg_id": "CCTV10",
+          "tvg_name": "CCTV-10 科教",
+          "logo": "CCTV10.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?10(?!\\d)",
+            "CCTV-10\\s*科教"
+          ]
+        },
+        {
+          "name": "CCTV-11 戏曲",
+          "tvg_id": "CCTV11",
+          "tvg_name": "CCTV-11 戏曲",
+          "logo": "CCTV11.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?11(?!\\d)",
+            "CCTV-11\\s*戏曲"
+          ]
+        },
+        {
+          "name": "CCTV-12 社会与法",
+          "tvg_id": "CCTV12",
+          "tvg_name": "CCTV-12 社会与法",
+          "logo": "CCTV12.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?12(?!\\d)",
+            "CCTV-12\\s*社会与法"
+          ]
+        },
+        {
+          "name": "CCTV-13 新闻",
+          "tvg_id": "CCTV13",
+          "tvg_name": "CCTV-13 新闻",
+          "logo": "CCTV13.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?13(?!\\d)",
+            "CCTV-13\\s*新闻"
+          ]
+        },
+        {
+          "name": "CCTV-14 少儿",
+          "tvg_id": "CCTV14",
+          "tvg_name": "CCTV-14 少儿",
+          "logo": "CCTV14.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?14(?!\\d)",
+            "CCTV-14\\s*少儿"
+          ]
+        },
+        {
+          "name": "CCTV-15 音乐",
+          "tvg_id": "CCTV15",
+          "tvg_name": "CCTV-15 音乐",
+          "logo": "CCTV15.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?15(?!\\d)",
+            "CCTV-15\\s*音乐"
+          ]
+        },
+        {
+          "name": "CCTV-16 奥林匹克",
+          "tvg_id": "CCTV16",
+          "tvg_name": "CCTV-16 奥林匹克",
+          "logo": "CCTV16.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?16(?!\\d)",
+            "CCTV-16\\s*(奥林匹克|奥运)"
+          ]
+        },
+        {
+          "name": "CCTV-17 农业农村",
+          "tvg_id": "CCTV17",
+          "tvg_name": "CCTV-17 农业农村",
+          "logo": "CCTV17.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?17(?!\\d)",
+            "CCTV-17\\s*农业农村"
+          ]
+        },
+        {
+          "name": "CCTV-4K 超高清",
+          "tvg_id": "CCTV4K",
+          "tvg_name": "CCTV-4K 超高清",
+          "logo": "CCTV4K.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?4k",
+            "CCTV-4K\\s*超高清"
+          ]
+        },
+        {
+          "name": "CCTV-8K 超高清",
+          "tvg_id": "CCTV8K",
+          "tvg_name": "CCTV-8K 超高清",
+          "logo": "CCTV8K.png",
+          "match_patterns": [
+            "(?i)cctv[-_\\s]?8k",
+            "CCTV-8K\\s*超高清"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "卫视频道",
+      "channels": [
+        {
+          "name": "湖南卫视",
+          "tvg_id": "Hunan",
+          "tvg_name": "湖南卫视",
+          "logo": "湖南卫视.png",
+          "match_patterns": ["湖南卫视"]
+        },
+        {
+          "name": "浙江卫视",
+          "tvg_id": "Zhejiang",
+          "tvg_name": "浙江卫视",
+          "logo": "浙江卫视.png",
+          "match_patterns": ["浙江卫视"]
+        },
+        {
+          "name": "江苏卫视",
+          "tvg_id": "Jiangsu",
+          "tvg_name": "江苏卫视",
+          "logo": "江苏卫视.png",
+          "match_patterns": ["江苏卫视"]
+        },
+        {
+          "name": "东方卫视",
+          "tvg_id": "Dragon",
+          "tvg_name": "东方卫视",
+          "logo": "东方卫视.png",
+          "match_patterns": ["东方卫视", "上海东方卫视"]
+        },
+        {
+          "name": "北京卫视",
+          "tvg_id": "Beijing",
+          "tvg_name": "北京卫视",
+          "logo": "北京卫视.png",
+          "match_patterns": ["北京卫视"]
+        },
+        {
+          "name": "广东卫视",
+          "tvg_id": "Guangdong",
+          "tvg_name": "广东卫视",
+          "logo": "广东卫视.png",
+          "match_patterns": ["广东卫视"]
+        },
+        {
+          "name": "深圳卫视",
+          "tvg_id": "Shenzhen",
+          "tvg_name": "深圳卫视",
+          "logo": "深圳卫视.png",
+          "match_patterns": ["深圳卫视"]
+        },
+        {
+          "name": "山东卫视",
+          "tvg_id": "Shandong",
+          "tvg_name": "山东卫视",
+          "logo": "山东卫视.png",
+          "match_patterns": ["山东卫视"]
+        },
+        {
+          "name": "安徽卫视",
+          "tvg_id": "Anhui",
+          "tvg_name": "安徽卫视",
+          "logo": "安徽卫视.png",
+          "match_patterns": ["安徽卫视"]
+        },
+        {
+          "name": "湖北卫视",
+          "tvg_id": "Hubei",
+          "tvg_name": "湖北卫视",
+          "logo": "湖北卫视.png",
+          "match_patterns": ["湖北卫视"]
+        },
+        {
+          "name": "四川卫视",
+          "tvg_id": "Sichuan",
+          "tvg_name": "四川卫视",
+          "logo": "四川卫视.png",
+          "match_patterns": ["四川卫视"]
+        },
+        {
+          "name": "重庆卫视",
+          "tvg_id": "Chongqing",
+          "tvg_name": "重庆卫视",
+          "logo": "重庆卫视.png",
+          "match_patterns": ["重庆卫视"]
+        },
+        {
+          "name": "天津卫视",
+          "tvg_id": "Tianjin",
+          "tvg_name": "天津卫视",
+          "logo": "天津卫视.png",
+          "match_patterns": ["天津卫视"]
+        },
+        {
+          "name": "河南卫视",
+          "tvg_id": "Henan",
+          "tvg_name": "河南卫视",
+          "logo": "河南卫视.png",
+          "match_patterns": ["河南卫视"]
+        },
+        {
+          "name": "东南卫视",
+          "tvg_id": "Southeast",
+          "tvg_name": "东南卫视",
+          "logo": "东南卫视.png",
+          "match_patterns": ["东南卫视", "福建东南卫视"]
+        }
+      ]
+    },
+    {
+      "name": "港澳台精选",
+      "channels": [
+        {
+          "name": "凤凰中文",
+          "tvg_id": "PHOENIX_ZH",
+          "tvg_name": "凤凰卫视中文台",
+          "logo": "凤凰中文.png",
+          "match_patterns": ["凤凰中文", "凤凰卫视中文台", "(?i)phoenix.*chinese"]
+        },
+        {
+          "name": "凤凰资讯",
+          "tvg_id": "PHOENIX_INFO",
+          "tvg_name": "凤凰卫视资讯台",
+          "logo": "凤凰资讯.png",
+          "match_patterns": ["凤凰资讯", "凤凰卫视资讯台", "(?i)phoenix.*info"]
+        },
+        {
+          "name": "凤凰香港",
+          "tvg_id": "PHOENIX_HK",
+          "tvg_name": "凤凰卫视香港台",
+          "logo": "凤凰香港.png",
+          "match_patterns": ["凤凰香港", "凤凰卫视香港台", "(?i)phoenix.*hk"]
+        },
+        {
+          "name": "翡翠台 (TVB)",
+          "tvg_id": "TVB_JADE",
+          "tvg_name": "翡翠台",
+          "logo": "翡翠台.png",
+          "match_patterns": ["翡翠台", "(?i)tvb.*jade", "(?i)jade.*tvb"]
+        },
+        {
+          "name": "港台电视 31",
+          "tvg_id": "RTHK31",
+          "tvg_name": "港台电视31",
+          "logo": "港台电视31.png",
+          "match_patterns": ["港台电视31", "港台电视 31", "(?i)rthk.*31"]
+        },
+        {
+          "name": "港台电视 32",
+          "tvg_id": "RTHK32",
+          "tvg_name": "港台电视32",
+          "logo": "港台电视32.png",
+          "match_patterns": ["港台电视32", "港台电视 32", "(?i)rthk.*32"]
+        }
+      ]
+    },
+    {
+      "name": "国际与纪录片",
+      "channels": [
+        {
+          "name": "CGTN",
+          "tvg_id": "CGTN",
+          "tvg_name": "CGTN 英语",
+          "logo": "CGTN.png",
+          "match_patterns": ["(?i)\\bcgtn\\b(?!.*doc)", "CGTN\\s*英语"]
+        },
+        {
+          "name": "CGTN 纪录",
+          "tvg_id": "CGTN_DOC",
+          "tvg_name": "CGTN 纪录",
+          "logo": "CGTN_Doc.png",
+          "match_patterns": ["(?i)cgtn.*(doc|纪录)", "CGTN\\s*纪录"]
+        },
+        {
+          "name": "国家地理",
+          "tvg_id": "NAT_GEO",
+          "tvg_name": "国家地理",
+          "logo": "国家地理.png",
+          "match_patterns": ["国家地理", "(?i)national\\s*geo"]
+        },
+        {
+          "name": "探索频道",
+          "tvg_id": "DISCOVERY",
+          "tvg_name": "探索频道",
+          "logo": "探索频道.png",
+          "match_patterns": ["探索频道", "(?i)discovery"]
+        },
+        {
+          "name": "NHK World",
+          "tvg_id": "NHK_WORLD",
+          "tvg_name": "NHK World Japan",
+          "logo": "NHKWorld.png",
+          "match_patterns": ["(?i)nhk\\s*world", "NHK\\s*世界"]
+        }
+      ]
+    }
+  ]
+}
+
