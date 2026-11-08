@@ -2,23 +2,24 @@
 @{
     Apps = @(
         @{
-            Id          = 'BBLL'
-            Name        = 'BlBl (BBLL)'
+            Id          = 'BT'
+            Name        = 'Bilibili TV (BT)'
             Type        = 'github'
-            Repo        = 'xiaye13579/BBLL'
-            AssetFilter = '.*release.*\.apk$'
-            Exclude     = '.*debug.*'
-            TargetFile  = 'BBLL-latest.apk'
-            Description = '哔哩哔哩 TV/Pad 开源第三方客户端'
+            Repo        = 'chinasoul/BT'
+            FallbackRepo= 'swyefun/BBLLV5'
+            AssetFilter = '.*universal\.apk$'
+            Exclude     = '.*api19.*'
+            TargetFile  = 'BT-latest.apk'
+            Description = '哔哩哔哩 TV 原生遥控开源客户端'
         },
         @{
             Id          = 'TizenTube'
-            Name        = 'TizenTube / SmartTube'
+            Name        = 'TizenTube Cobalt'
             Type        = 'github'
-            Repo        = 'yuliskov/SmartTube'
-            FallbackRepo= 'reisxd/TizenTubeCobalt'
-            AssetFilter = '.*(arm|release|Cobalt|stable).*\.apk$'
-            Exclude     = '.*(x86|beta).*'
+            Repo        = 'reisxd/TizenTubeCobalt'
+            FallbackRepo= 'yuliskov/SmartTube'
+            AssetFilter = '.*(Cobalt|universal).*\.apk$'
+            Exclude     = '.*(x86).*'
             TargetFile  = 'TizenTube-latest.apk'
             Description = 'YouTube TV 核心去广告客户端'
         },
@@ -27,7 +28,7 @@
             Name        = 'TVBox (FongMi)'
             Type        = 'github'
             Repo        = 'FongMi/Release'
-            FallbackRepo= 'q215613905/TVBoxOS'
+            FallbackRepo= 'q215613905/TVBoxOSCRelease'
             AssetFilter = '.*(leanback|java).*\.apk$'
             Exclude     = '.*mobile.*'
             TargetFile  = 'TVBox-latest.apk'
@@ -38,8 +39,8 @@
             Name        = 'mytv-android'
             Type        = 'github'
             Repo        = 'mytv-android/mytv-android'
-            AssetFilter = '.*release.*\.apk$'
-            Exclude     = '.*debug.*'
+            AssetFilter = '.*mytv-android-tv.*(all|arm64-v8a).*original.*\.apk$'
+            Exclude     = '.*(disguised|x5offline|x86).*'
             TargetFile  = 'mytv-latest.apk'
             Description = '极简电视直播 IPTV 客户端'
         },
@@ -62,4 +63,3 @@
     )
     MinApkSizeBytes = 5242880
 }
-

@@ -17,6 +17,9 @@ Set-StrictMode -Off
 $ErrorActionPreference = 'Continue'
 $ProgressPreference = 'SilentlyContinue'
 
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 if ([System.Enum]::IsDefined([System.Net.SecurityProtocolType], 'Tls13')) {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls13
@@ -40,23 +43,24 @@ function Get-RegistryConfig {
     return @{
         Apps = @(
             @{
-                Id          = 'BBLL'
-                Name        = 'BlBl (BBLL)'
+                Id          = 'BT'
+                Name        = 'Bilibili TV (BT)'
                 Type        = 'github'
-                Repo        = 'xiaye13579/BBLL'
-                AssetFilter = '.*release.*\.apk$'
-                Exclude     = '.*debug.*'
-                TargetFile  = 'BBLL-latest.apk'
-                Description = '哔哩哔哩 TV/Pad 开源第三方客户端'
+                Repo        = 'chinasoul/BT'
+                FallbackRepo= 'swyefun/BBLLV5'
+                AssetFilter = '.*universal\.apk$'
+                Exclude     = '.*api19.*'
+                TargetFile  = 'BT-latest.apk'
+                Description = '哔哩哔哩 TV 原生遥控开源客户端'
             },
             @{
                 Id          = 'TizenTube'
-                Name        = 'TizenTube / SmartTube'
+                Name        = 'TizenTube Cobalt'
                 Type        = 'github'
-                Repo        = 'yuliskov/SmartTube'
-                FallbackRepo= 'reisxd/TizenTubeCobalt'
-                AssetFilter = '.*(arm|release|Cobalt|stable).*\.apk$'
-                Exclude     = '.*(x86|beta).*'
+                Repo        = 'reisxd/TizenTubeCobalt'
+                FallbackRepo= 'yuliskov/SmartTube'
+                AssetFilter = '.*(Cobalt|universal).*\.apk$'
+                Exclude     = '.*(x86).*'
                 TargetFile  = 'TizenTube-latest.apk'
                 Description = 'YouTube TV 核心去广告客户端'
             },
@@ -65,7 +69,7 @@ function Get-RegistryConfig {
                 Name        = 'TVBox (FongMi)'
                 Type        = 'github'
                 Repo        = 'FongMi/Release'
-                FallbackRepo= 'q215613905/TVBoxOS'
+                FallbackRepo= 'q215613905/TVBoxOSCRelease'
                 AssetFilter = '.*(leanback|java).*\.apk$'
                 Exclude     = '.*mobile.*'
                 TargetFile  = 'TVBox-latest.apk'
@@ -76,8 +80,8 @@ function Get-RegistryConfig {
                 Name        = 'mytv-android'
                 Type        = 'github'
                 Repo        = 'mytv-android/mytv-android'
-                AssetFilter = '.*release.*\.apk$'
-                Exclude     = '.*debug.*'
+                AssetFilter = '.*mytv-android-tv.*(all|arm64-v8a).*original.*\.apk$'
+                Exclude     = '.*(disguised|x5offline|x86).*'
                 TargetFile  = 'mytv-latest.apk'
                 Description = '极简电视直播 IPTV 客户端'
             },
@@ -155,20 +159,13 @@ function Get-RemoteReleaseInfo {
     }
 
     foreach ($repo in $reposToTry) {
+        # 1. 尝试 GitHub REST API
         $apiUrls = @("https://api.github.com/repos/$repo/releases/latest")
-        foreach ($mirror in $Mirrors) {
-            if ($mirror -match 'ghproxy') {
-                $apiUrls += "$($mirror)https://api.github.com/repos/$repo/releases/latest"
-            }
-        }
-
         foreach ($apiUrl in $apiUrls) {
             try {
-                Write-Host "  [-] 正在探测版本: $apiUrl" -ForegroundColor Gray
-                $response = Invoke-RestMethod -Uri $apiUrl -Headers $headers -TimeoutSec 10 -ErrorAction Stop
+                Write-Host "  [-] 尝试通过 API 探测版本: $apiUrl" -ForegroundColor Gray
+                $response = Invoke-RestMethod -Uri $apiUrl -Headers $headers -TimeoutSec 6 -ErrorAction Stop
                 if ($response -and $response.tag_name -and $response.assets) {
-                    $matchedAsset = $null
-
                     $apkAssets = @($response.assets) | Where-Object { $_.name -match '\.apk$' }
 
                     if ($App.AssetFilter) {
@@ -190,6 +187,41 @@ function Get-RemoteReleaseInfo {
                             Size        = [long]$matchedAsset.size
                             Direct      = $false
                         }
+                    }
+                }
+            }
+            catch {
+                # API 失败继续执行重定向嗅探降级
+            }
+        }
+
+        # 2. 降级备选：通过 Releases 最新页面 302 重定向嗅探 Tag
+        $redirectEndpoints = @(
+            "https://kkgithub.com/$repo/releases/latest",
+            "https://github.com/$repo/releases/latest"
+        )
+        foreach ($redirectUrl in $redirectEndpoints) {
+            try {
+                Write-Host "  [-] API 受限，尝试重定向嗅探: $redirectUrl" -ForegroundColor Gray
+                $req = [System.Net.HttpWebRequest]::Create($redirectUrl)
+                $req.AllowAutoRedirect = $false
+                $req.Timeout = 6000
+                $req.UserAgent = $headers['User-Agent']
+                $resp = $req.GetResponse()
+                $location = $resp.GetResponseHeader('Location')
+                $resp.Close()
+
+                if ($location -match '/releases/tag/([^/?#]+)') {
+                    $extractedTag = $matches[1]
+                    Write-Host "  [+] 成功嗅探到最新发布 Tag: $extractedTag" -ForegroundColor Green
+                    return @{
+                        Tag         = $extractedTag
+                        DownloadUrl = "https://github.com/$repo/releases/download/$extractedTag/$($App.TargetFile)"
+                        FallbackUrls= @(
+                            "https://kkgithub.com/$repo/releases/download/$extractedTag/$($App.TargetFile)"
+                        )
+                        FileName    = $App.TargetFile
+                        Direct      = $false
                     }
                 }
             }
@@ -230,6 +262,14 @@ function Build-DownloadUrlChain {
         foreach ($fb in $FallbackUrls) {
             if (-not [string]::IsNullOrWhiteSpace($fb)) {
                 $urls.Add($fb)
+                if ($fb -match 'github\.com') {
+                    foreach ($mirror in $Mirrors) {
+                        $trimmed = $mirror.TrimEnd('/')
+                        if ($mirror -match 'ghproxy') {
+                            $urls.Add("$trimmed/$fb")
+                        }
+                    }
+                }
             }
         }
     }
@@ -482,4 +522,3 @@ Write-Host "========================================================" -Foregroun
 Write-Host "                     更新执行汇总看板" -ForegroundColor Cyan
 Write-Host "========================================================" -ForegroundColor Cyan
 $SummaryReport | Format-Table -AutoSize -Property Name, Version, Status, SizeMB, File
-

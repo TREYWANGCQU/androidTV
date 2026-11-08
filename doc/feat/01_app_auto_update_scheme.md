@@ -10,7 +10,7 @@
 ## 1. 方案背景与目标 (Background & Objectives)
 
 ### 1.1 现状与痛点
-1. **多源维护繁琐**：电视端常用开源增强与轻量应用（如哔哩哔哩第三方客户端 **BBLL**、YouTube 去广告/Cobalt 核心客户端 **TizenTube Cobalt / SmartTube**、影视聚合播放器 **TVBox / FongMi**、电视极速直播 **mytv-android** 以及长辈友好型纯净桌面 **Emotn Launcher**）迭代频繁且分发源分散。
+1. **多源维护繁琐**：电视端常用开源增强与轻量应用（如哔哩哔哩 TV 端开源客户端 **BT (bilibili TV)**、YouTube 去广告/Cobalt 核心客户端 **TizenTube Cobalt / SmartTube**、影视聚合播放器 **TVBox / FongMi**、电视极速直播 **mytv-android** 以及长辈友好型纯净桌面 **Emotn Launcher**）迭代频繁且分发源分散。
 2. **国内网络受阻**：直接从原生 `github.com/.../releases/download/` 拉取 APK 经常遭遇 DNS 污染、TCP 连接重置或握手超时，导致下载失败或产生 0KB 损坏包。
 3. **版本滞后与装机割裂**：每次更新需要用户在 PC 端网页翻找 Release、逐个点击下载、插拔 U 盘或手动输入 `adb install`，缺乏端到端的一键更新与版本基准追溯。
 
@@ -28,16 +28,19 @@
 
 | 应用简称 | 完整项目定位 | 权威分发渠道 / 仓库 | 发布资产 (Asset) 匹配规则 | 架构说明 | 依赖门禁 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **BlBl (BBLL)** | 哔哩哔哩 TV/Pad 开源第三方客户端 | `xiaye13579/BBLL` | `*release*.apk` (排除 debug 包) | 推荐 universal 通用架构 | Android 5.0+ |
-| **TizenTube** | YouTube TV Cobalt 核心去广告版 (或 SmartTube) | `reisxd/TizenTubeCobalt` *(备用: `yuliskov/SmartTube`)* | `*Cobalt*.apk` 或 `*arm*.apk` | 适配 Android TV Cobalt 渲染 | Android 4.4+ |
-| **TVBox** | 开源空壳点播/直播聚合播放器 (FongMi 内核) | `FongMi/Release` *(或 `q215613905/TVBoxOS`)* | `*leanback*.apk` 或 `*java*.apk` | 专为遥控器 D-Pad 交互定制 | Android 5.0+ |
-| **mytv-android** | 极简电视直播 (IPTV) 客户端 | `mytv-android/mytv-android` | `*release*.apk` | 专为遥控器切台优化，开机直达秒播 | Android 5.0+ |
+| **BT (bilibili TV)** | 哔哩哔哩 TV 原生遥控开源客户端 | `chinasoul/BT` *(备用: `swyefun/BBLLV5` / `cat3399/blbl`)* | `.*universal\.apk$` (排除 api19 兼容包) | 推荐 universal 通用架构 (ExoPlayer + Leanback) | Android 5.1+ |
+| **TizenTube** | YouTube TV Cobalt 核心去广告版 (或 SmartTube) | `reisxd/TizenTubeCobalt` *(备用: `yuliskov/SmartTube`)* | `.*(Cobalt\|universal).*\.apk$` | 适配 Android TV Cobalt 27 渲染 | Android 7.0+ |
+| **TVBox** | 开源空壳点播/直播聚合播放器 (FongMi 内核) | `FongMi/Release` *(备用: `q215613905/TVBoxOSCRelease`)* | `.*(leanback\|java).*\.apk$` | 专为遥控器 D-Pad 交互定制 | Android 5.0+ |
+| **mytv-android** | 极简电视直播 (IPTV) 客户端 | `mytv-android/mytv-android` | `.*mytv-android-tv.*(all\|arm64-v8a).*original.*\.apk$` | 专为遥控器切台优化，内置 Media3/IJK/VLC | Android 6.0+ |
 | **Emotn Launcher** | 经典大图标长辈友好型纯净桌面 | 官方分发 `app.emotn.com` *(或静态托管直链)* | `*Emotn*.apk` 或固定归档包 | 极简大图标、支持国内天气插件、老幼皆宜 | Android 4.4+ |
 
 > [!NOTE]
 > **技术事实说明**：  
-> 1. **TizenTube / SmartTube**：原生 TizenTube 运行于三星 Tizen 操作系统（`.wgt` 格式）。在 Android TV 生态中，同作者/社区移植版为 **TizenTube Cobalt**。为兼顾兼容性，方案支持在清单中灵活切换为该生态最广泛使用的 **SmartTube** (`yuliskov/SmartTube`)。  
-> 2. **Emotn Launcher**：属于闭源免费桌面软件（无开放 GitHub Releases API），其官方门户为 `app.emotn.com`。在 `AppRegistry` 中，将其配置为“静态直链/CDN 托管源”，下载引擎自适应支持直接 URL 流式下载与体积校验，与其他 GitHub 动态 Releases 应用统一落盘管理。
+> 1. **BT 与历史版本替代**：原 `xiaye13579/BBLL` 已于 2025 年初停更且受 B 站官方 API 风控（返回 `-352`）严重影响；`cat3399/blbl` 虽发布至 v0.1.29 但已被作者设置为只读归档；当前生态首选用原生 Kotlin 开发的 `chinasoul/BT`，专为电视遥控器打造。  
+> 2. **TizenTube Cobalt / SmartTube**：原生 TizenTube 运行于三星 Tizen 操作系统（`.wgt` 格式）。在 Android TV 生态中，由 `reisxd/TizenTubeCobalt` 承担 Cobalt 核心主选，`yuliskov/SmartTube` 作为稳定性备选。  
+> 3. **TVBox 发布仓纠偏**：俊版原仓库 `q215613905/TVBoxOS` 仅维护源码无编译 Release，其实际 GitHub Actions 自动化编译发布仓库为 `q215613905/TVBoxOSCRelease`。  
+> 4. **mytv-android 资产规则**：其实际 Release 资产命名前缀为 `mytv-android-tv-*-original.apk`，通过 `(all|arm64-v8a)` 模式精准匹配，严格排除 `disguised`（伪装包）与 `x5offline`（过大离线包）。  
+> 5. **Emotn Launcher**：属于闭源免费桌面软件（无开放 GitHub Releases API），其官方门户为 `app.emotn.com`。在 `AppRegistry` 中，将其配置为“静态直链/CDN 托管源”，下载引擎自适应支持直接 URL 流式下载与体积校验，与其他 GitHub 动态 Releases 应用统一落盘管理。
 
 ---
 
@@ -60,7 +63,7 @@ flowchart TD
     end
 
     subgraph Host ["本地物理存储 (Local File System)"]
-        APK_DIR["apk/\n- BBLL-latest.apk\n- TizenTube-latest.apk\n- TVBox-latest.apk\n- mytv-latest.apk\n- EmotnLauncher-latest.apk\n- manifest.cache.json"]
+        APK_DIR["apk/\n- BT-latest.apk\n- TizenTube-latest.apk\n- TVBox-latest.apk\n- mytv-latest.apk\n- EmotnLauncher-latest.apk\n- manifest.cache.json"]
     end
 
     subgraph ADB ["下发执行层 (Deployment Integration)"]
@@ -92,7 +95,7 @@ sequenceDiagram
     U->>B: 双击运行或命令行调用
     B->>P: 调用 powershell -ExecutionPolicy Bypass
     P->>F: 读取本地缓存元数据 (manifest.cache.json)
-    loop 遍历目标应用 (BBLL, TizenTube, TVBox, mytv, Emotn)
+    loop 遍历目标应用 (BT, TizenTube, TVBox, mytv, Emotn)
         P->>G: 请求 repos/{owner}/{repo}/releases/latest
         alt API 请求成功
             G-->>P: 返回最新 Release JSON (Tag, Assets)
@@ -139,7 +142,7 @@ sequenceDiagram
 ```text
 androidTV/
 ├── apk/                             # APK 归档目标目录
-│   ├── BBLL-latest.apk              # 符号链接或标准化重命名副本
+│   ├── BT-latest.apk                # 符号链接或标准化重命名副本
 │   ├── TizenTube-latest.apk
 │   ├── TVBox-latest.apk
 │   ├── mytv-latest.apk
@@ -176,7 +179,7 @@ androidTV/
 下载完成后，脚本探测当前是否存在已连接的 ADB 电视设备：
 - 若存在已授权的设备（`adb get-state` 返回 `device`），提供一键覆写安装选项：
   ```cmd
-  adb install -r -d -g apk/BBLL-latest.apk
+  adb install -r -d -g apk/BT-latest.apk
   ```
   （`-r` 保留数据替换，`-d` 允许降级覆盖，`-g` 授予运行时所有默认权限）
 
