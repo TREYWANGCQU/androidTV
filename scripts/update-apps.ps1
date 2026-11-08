@@ -1,4 +1,4 @@
-# scripts/update-apps.ps1
+﻿# scripts/update-apps.ps1
 [CmdletBinding()]
 param (
     [ValidateSet('Download', 'Install', 'Check')]
@@ -70,8 +70,9 @@ function Get-RegistryConfig {
                 Type        = 'github'
                 Repo        = 'FongMi/Release'
                 FallbackRepo= 'q215613905/TVBoxOSCRelease'
-                AssetFilter = '.*(leanback|java).*\.apk$'
-                Exclude     = '.*mobile.*'
+                AssetFilter = '.*leanback.*(armeabi_v7a|v7a).*\.apk$'
+                Exclude     = '.*(mobile|arm64).*'
+                ReleaseAsset= 'leanback-armeabi_v7a.apk'
                 TargetFile  = 'TVBox-latest.apk'
                 Description = '开源聚合点播/直播播放器'
             },
@@ -98,11 +99,13 @@ function Get-RegistryConfig {
             }
         )
         Mirrors = @(
+            'https://ghfast.top/',
+            'https://gh-proxy.com/',
             'https://ghproxy.net/',
             'https://mirror.ghproxy.com/',
             'https://kkgithub.com/'
         )
-        MinApkSizeBytes = 5242880
+        MinApkSizeBytes = 2097152
     }
 }
 
@@ -214,13 +217,19 @@ function Get-RemoteReleaseInfo {
                 if ($location -match '/releases/tag/([^/?#]+)') {
                     $extractedTag = $matches[1]
                     Write-Host "  [+] 成功嗅探到最新发布 Tag: $extractedTag" -ForegroundColor Green
+                    $remoteAssetFileName = if ($App.ReleaseAsset) {
+                        $App.ReleaseAsset -replace '\{tag\}', $extractedTag
+                    } else {
+                        $App.TargetFile
+                    }
+
                     return @{
                         Tag         = $extractedTag
-                        DownloadUrl = "https://github.com/$repo/releases/download/$extractedTag/$($App.TargetFile)"
+                        DownloadUrl = "https://github.com/$repo/releases/download/$extractedTag/$remoteAssetFileName"
                         FallbackUrls= @(
-                            "https://kkgithub.com/$repo/releases/download/$extractedTag/$($App.TargetFile)"
+                            "https://kkgithub.com/$repo/releases/download/$extractedTag/$remoteAssetFileName"
                         )
-                        FileName    = $App.TargetFile
+                        FileName    = $remoteAssetFileName
                         Direct      = $false
                     }
                 }
@@ -329,9 +338,11 @@ function Test-AdbDeviceReady {
 
     try {
         $devicesOutput = & adb devices 2>&1
-        $onlineDevices = @($devicesOutput) | Where-Object { $_ -match '\tdevice$' }
-        if ($onlineDevices.Count -gt 0) {
-            Write-Host "[ADB] 发现已连接并授权的电视设备: $($onlineDevices[0].Split("`t")[0])" -ForegroundColor Green
+        $onlineLines = @($devicesOutput | Where-Object { $_ -match '\tdevice\s*$' })
+        if ($onlineLines.Count -gt 0) {
+            $deviceLine = [string]$onlineLines[0]
+            $deviceSerial = ($deviceLine -split '\s+')[0]
+            Write-Host "[ADB] 发现已连接并授权的电视设备: $deviceSerial" -ForegroundColor Green
             return $true
         }
         else {
@@ -400,6 +411,29 @@ foreach ($app in $TargetApps) {
     if (-not $remoteInfo) {
         Write-Host "  [!] 无法获取远程版本元数据 (网络受限或镜像均无响应)。" -ForegroundColor Red
         $localExists = (Test-Path -Path $finalLatestPath)
+
+        if ($Mode -eq 'Install' -and $localExists) {
+            Write-Host "  [*] 远程元数据获取受阻，但本地存在归档包，尝试直连电视安装..." -ForegroundColor Yellow
+            $adbReady = Test-AdbDeviceReady
+            $installedStatus = "未部署"
+            if ($adbReady) {
+                $installOk = Install-ApkToDevice -ApkFilePath $finalLatestPath
+                $installedStatus = if ($installOk) { "已覆盖安装(离线包)" } else { "ADB安装失败" }
+            }
+            else {
+                $installedStatus = "无就绪ADB"
+            }
+            $SummaryReport.Add([PSCustomObject]@{
+                AppId   = $app.Id
+                Name    = $app.Name
+                Version = if ($cached -and $cached.Tag) { $cached.Tag } else { "本地" }
+                Status  = $installedStatus
+                File    = $app.TargetFile
+                SizeMB  = [math]::Round((Get-Item $finalLatestPath).Length / 1MB, 2)
+            })
+            continue
+        }
+
         $SummaryReport.Add([PSCustomObject]@{
             AppId   = $app.Id
             Name    = $app.Name
@@ -495,9 +529,9 @@ foreach ($app in $TargetApps) {
     } elseif ($Mode -eq 'Install') {
         $installedStatus
     } elseif ($isLocalUpToDate) {
-        "已是最新"
+        "本地已最新(未推电视)"
     } else {
-        "更新完成"
+        "已下载落盘(未推电视)"
     }
 
     $finalSizeMB = if (Test-Path -Path $finalLatestPath) {

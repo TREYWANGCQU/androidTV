@@ -29,8 +29,9 @@
             Type         = 'github'
             Repo         = 'FongMi/Release'
             FallbackRepo = 'q215613905/TVBoxOSCRelease'
-            AssetFilter  = '.*(leanback|java).*\.apk$'
-            Exclude      = '.*mobile.*'
+            AssetFilter  = '.*leanback.*(armeabi_v7a|v7a).*\.apk$'
+            Exclude      = '.*(mobile|arm64).*'
+            ReleaseAsset = 'leanback-armeabi_v7a.apk'
             TargetFile   = 'TVBox-latest.apk'
             Description  = '开源聚合点播/直播播放器'
         },
@@ -57,6 +58,8 @@
         }
     )
     Mirrors         = @(
+        'https://ghfast.top/',
+        'https://gh-proxy.com/',
         'https://ghproxy.net/',
         'https://mirror.ghproxy.com/',
         'https://kkgithub.com/'

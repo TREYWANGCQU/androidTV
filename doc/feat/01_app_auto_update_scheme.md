@@ -28,19 +28,19 @@
 
 | 应用简称 | 完整项目定位 | 权威分发渠道 / 仓库 | 发布资产 (Asset) 匹配规则 | 架构说明 | 依赖门禁 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **BT (bilibili TV)** | 哔哩哔哩 TV 原生遥控开源客户端 | `chinasoul/BT` *(备用: `swyefun/BBLLV5` / `cat3399/blbl`)* | `.*universal\.apk$` (排除 api19 兼容包) | 推荐 universal 通用架构 (ExoPlayer + Leanback) | Android 5.1+ |
+| **BT (bilibili TV)** | 哔哩哔哩 TV 原生遥控开源客户端 | `chinasoul/BT` *(备用: `swyefun/BBLLV5` / `cat3399/blbl`)* | `.*universal\.apk$` (排除 api19 兼容包) | 推荐 universal 通用架构 (ExoPlayer + Leanback，体积 ~3.3MB) | Android 5.1+ |
 | **TizenTube** | YouTube TV Cobalt 核心去广告版 (或 SmartTube) | `reisxd/TizenTubeCobalt` *(备用: `yuliskov/SmartTube`)* | `.*(Cobalt\|universal).*\.apk$` | 适配 Android TV Cobalt 27 渲染 | Android 7.0+ |
 | **TVBox** | 开源空壳点播/直播聚合播放器 (FongMi 内核) | `FongMi/Release` *(备用: `q215613905/TVBoxOSCRelease`)* | `.*(leanback\|java).*\.apk$` | 专为遥控器 D-Pad 交互定制 | Android 5.0+ |
 | **mytv-android** | 极简电视直播 (IPTV) 客户端 | `mytv-android/mytv-android` | `.*mytv-android-tv.*(all\|arm64-v8a).*original.*\.apk$` | 专为遥控器切台优化，内置 Media3/IJK/VLC | Android 6.0+ |
-| **Emotn Launcher** | 经典大图标长辈友好型纯净桌面 | 官方分发 `app.emotn.com` *(或静态托管直链)* | `*Emotn*.apk` 或固定归档包 | 极简大图标、支持国内天气插件、老幼皆宜 | Android 4.4+ |
+| **Emotn Launcher** | 经典大图标长辈友好型纯净桌面 | 当贝分发源 *(主: `zmautoapp.dangsfly.com` / 原厂备用: `app.emotn.com`)* | `.*\.apk$` 或固定归档包 | 极简大图标、支持国内天气插件、老幼皆宜 | Android 4.4+ |
 
 > [!NOTE]
 > **技术事实说明**：  
-> 1. **BT 与历史版本替代**：原 `xiaye13579/BBLL` 已于 2025 年初停更且受 B 站官方 API 风控（返回 `-352`）严重影响；`cat3399/blbl` 虽发布至 v0.1.29 但已被作者设置为只读归档；当前生态首选用原生 Kotlin 开发的 `chinasoul/BT`，专为电视遥控器打造。  
+> 1. **BT 与历史版本替代及轻量包特征**：原 `xiaye13579/BBLL` 已于 2025 年初停更且受 B 站官方 API 风控（返回 `-352`）严重影响；`cat3399/blbl` 虽发布至 v0.1.29 但已被作者设置为只读归档；当前生态首选用原生 Kotlin 开发的 `chinasoul/BT`，专为电视遥控器打造。需要特别注意：**BT 的 universal.apk 经过极致精简，物理体积约为 3.29 MB (3,370 KB)**，系统门禁设计不可机械设置 5MB 硬门槛，否则会诱发假阳性误删。  
 > 2. **TizenTube Cobalt / SmartTube**：原生 TizenTube 运行于三星 Tizen 操作系统（`.wgt` 格式）。在 Android TV 生态中，由 `reisxd/TizenTubeCobalt` 承担 Cobalt 核心主选，`yuliskov/SmartTube` 作为稳定性备选。  
 > 3. **TVBox 发布仓纠偏**：俊版原仓库 `q215613905/TVBoxOS` 仅维护源码无编译 Release，其实际 GitHub Actions 自动化编译发布仓库为 `q215613905/TVBoxOSCRelease`。  
 > 4. **mytv-android 资产规则**：其实际 Release 资产命名前缀为 `mytv-android-tv-*-original.apk`，通过 `(all|arm64-v8a)` 模式精准匹配，严格排除 `disguised`（伪装包）与 `x5offline`（过大离线包）。  
-> 5. **Emotn Launcher**：属于闭源免费桌面软件（无开放 GitHub Releases API），其官方门户为 `app.emotn.com`。在 `AppRegistry` 中，将其配置为“静态直链/CDN 托管源”，下载引擎自适应支持直接 URL 流式下载与体积校验，与其他 GitHub 动态 Releases 应用统一落盘管理。
+> 5. **Emotn Launcher 官方源失效与镜像替代**：属于闭源免费桌面软件（无开放 GitHub Releases API），其原厂门户 `app.emotn.com/download/app` 现已返回 404，且 `cdn.emotn.com` 域名已下线。为确保无人值守自动化闭环，必须在配置中将分发源重定向至高可用静态 CDN 镜像（如当贝分发节点 `zmautoapp.dangsfly.com/...`），由下载引擎自适应支持直接 URL 流式下载与体积校验，与 GitHub Releases 应用统一纳管。
 
 ---
 
@@ -169,10 +169,10 @@ androidTV/
   - `https://kkgithub.com/...`
 - **Fallback 机制**：下载采用 HTTP 探针，若返回码非 200 或握手超时（>8s），自动顺延至下一镜像重试，最多重试 3 次。
 
-#### 2. 包完整性与 0KB 防御
+#### 2. 包完整性与轻量包兼容门禁
 在下载完成进入 `apk/` 目录前，必须通过以下硬门禁：
 1. **HTTP Status Code** 严格等于 200。
-2. **物理文件体积门禁**：APK 体积必须 $\ge 5\,\text{MB}$。若 $< 5\,\text{MB}$，判定为反代劫持报错页或断流坏包，直接销毁并告警，禁止覆盖现有 `latest.apk`。
+2. **物理文件体积门禁**：全局基础门禁设为 $\ge 2\,\text{MB}$（默认 2,097,152 字节），拦截反代劫持 HTML 报错页（通常 $< 100\,\text{KB}$）或 0KB 断流坏包；同时支持单应用在清单中配置个性化阈值，杜绝 3.29MB 极简包被误判。
 3. **原子性写入**：先下载至 `apk/.tmp_<name>.apk`，全量校验通过后原子重命名至目标路径。
 
 #### 3. 与现有 ADB 工具链协同 (Optional Pipeline)
@@ -182,6 +182,58 @@ androidTV/
   adb install -r -d -g apk/BT-latest.apk
   ```
   （`-r` 保留数据替换，`-d` 允许降级覆盖，`-g` 授予运行时所有默认权限）
+
+### 4.4 异常源自愈与细粒度门禁适配规范 (方案 A: 全自动修复机制)
+
+在实机演练排障中，部分应用可能出现下载阻断现象。通过白盒证伪与根因追溯，系统确立**方案 A（配置级全自动自愈）**作为核心演化标准，彻底替代繁琐的手动下载与人工文件搬运：
+
+#### 1. BT 应用 3.29MB 假阳性误杀治理
+- **根因分析**：GitHub Release 的 `BT-v0.9.42-universal.apk` 物理体积为 3,370.91 KB（约 3.29 MB）。若引擎硬编码 5MB 门禁，将触发防御性删除逻辑，陷入“重复下载成功却判定失败”的假阳性死循环；且若用户手动放入文件，亦会因本地大小校验不通过而反复触发联网覆盖。
+- **治理标准**：将全局 `MinApkSizeBytes` 阈值调谐至 `2097152`（2MB），既能可靠阻断文本型 404/反代报错页（几 KB 至几十 KB），又能无损放行轻量级极简 TV 客户端。
+
+#### 2. Emotn Launcher 官方源失效与镜像重定向
+- **根因分析**：Emotn 原厂直链 `https://app.emotn.com/download/app` 报 404，备选源 `cdn.emotn.com` 域名已下线。
+- **治理标准**：将 `AppRegistry.psd1` 的分发源平滑替换为经过验证的当贝 CDN 分发节点（`https://zmautoapp.dangsfly.com/20260711/6a51fff5b0db3.apke8f2.apk`），保留原厂域名为备选，确保无人值守更新流水线全绿通畅。
+
+#### 3. `AppRegistry.psd1` 契约配置更新示例
+```powershell
+# scripts/modules/AppRegistry.psd1
+@{
+    Apps = @(
+        # 1. 哔哩哔哩 TV 端 (放宽门禁后原生全自动拉取)
+        @{
+            Id          = 'BT'
+            Name        = 'Bilibili TV (BT)'
+            Type        = 'github'
+            Repo        = 'chinasoul/BT'
+            FallbackRepo= 'swyefun/BBLLV5'
+            AssetFilter = '.*universal\.apk$'
+            Exclude     = '.*api19.*'
+            TargetFile  = 'BT-latest.apk'
+            Description = '哔哩哔哩 TV 原生遥控开源客户端'
+        },
+        # ... 省略 TizenTube / TVBox / mytv ...
+        # 5. Emotn 桌面 (切入高可用 CDN 镜像源)
+        @{
+            Id          = 'EmotnLauncher'
+            Name        = 'Emotn Launcher'
+            Type        = 'direct'
+            Url         = 'https://zmautoapp.dangsfly.com/20260711/6a51fff5b0db3.apke8f2.apk'
+            FallbackUrls= @(
+                'https://app.emotn.com/download/app'
+            )
+            TargetFile  = 'EmotnLauncher-latest.apk'
+            Description = '长辈友好型纯净电视桌面'
+        }
+    )
+    Mirrors = @(
+        'https://ghproxy.net/',
+        'https://mirror.ghproxy.com/',
+        'https://kkgithub.com/'
+    )
+    MinApkSizeBytes = 2097152 # 统一放宽至 2MB，完美兼容 BT 3.29MB 安装包
+}
+```
 
 ---
 
