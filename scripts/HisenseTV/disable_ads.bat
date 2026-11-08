@@ -44,7 +44,7 @@ if not "%~1"=="" (
 
 :DETECT_DEVICE
 if "%TARGET_DEVICE%"=="" (
-    :: 探测是否有当前已连接的 target
+    rem 探测是否有当前已连接的 target
     adb devices | findstr /i "%DEFAULT_DEVICE_IP%.*device" >nul 2>nul
     if %errorlevel% equ 0 (
         set "TARGET_DEVICE=%DEFAULT_DEVICE_IP%"
@@ -58,7 +58,7 @@ if "%TARGET_DEVICE%"=="" (
                 )
             )
         )
-        :: 未就绪则尝试连接默认 IP
+        rem 未就绪则尝试连接默认 IP
         echo [*] 正在尝试连线默认海信电视端点: %DEFAULT_DEVICE_IP% ...
         adb connect %DEFAULT_DEVICE_IP% >nul 2>nul
         adb devices | findstr /i "%DEFAULT_DEVICE_IP%.*device" >nul 2>nul
@@ -159,9 +159,9 @@ call :DISABLE_PKG "com.speech.chatroom" "语音聊天室推流服务 (社交互�
 :: --- 条件评估项：深度内存优化 ---
 if "%INCLUDE_OPTIONAL%"=="1" (
     echo.
-    echo [--- 额外项：深度优化组件 (释放 ~77MB 活跃物理内存) ---]
-    call :DISABLE_PKG "com.hisense.tv.aivirtualassistant" "海信虚拟人 AI 助手 (小聚卡通形象，保留基础遥控语音)"
-    call :DISABLE_PKG "com.hisense.singlelisten" "单独听服务 (息屏听歌功能)"
+    echo [--- 额外项：深度优化组件 [释放 ~77MB 活跃物理内存] ---]
+    call :DISABLE_PKG "com.hisense.tv.aivirtualassistant" "海信虚拟人 AI 助手 [小聚卡通形象，保留基础遥控语音]"
+    call :DISABLE_PKG "com.hisense.singlelisten" "单独听服务 [息屏听歌功能]"
 )
 
 echo.
@@ -196,10 +196,10 @@ adb -s %TARGET_DEVICE% shell pm disable-user --user 0 %PKG_NAME% 2>nul | findstr
 if %errorlevel% equ 0 (
     echo     [成功] 已冻结: %PKG_NAME%
 ) else (
-    :: 检查是否本来就未安装或属于历史注销组件
+    rem 检查是否本来就未安装或属于历史注销组件
     adb -s %TARGET_DEVICE% shell pm list packages | findstr /x "package:%PKG_NAME%" >nul 2>nul
     if %errorlevel% neq 0 (
-        echo     [跳过] 该组件当前未处于安装状态或已注销 (%PKG_NAME%)
+        echo     [跳过] 该组件当前未处于安装状态或已注销: %PKG_NAME%
     ) else (
         echo     [状态] 已执行冻结指令: %PKG_NAME%
     )
