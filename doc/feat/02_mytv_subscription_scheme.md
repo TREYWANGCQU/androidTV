@@ -101,9 +101,9 @@ flowchart TD
 
     subgraph Upstream ["纯 IPv4 优质源池 (Upstream Pool)"]
         FMM["FanMingMing IPv4 CDN 源\n(央视/主流卫视官方 IPv4 纯净源)"]
-        YANG["YanG-1989/m3u (IPv4 聚合)\n(多省份高码率 IPv4 稳定源)"]
-        MIGU["咪咕/央视频官方 IPv4 CDN 直链\n(国内 1080P/4K 高清保底)"]
-        CUSTOM["自定义保底专线源\n(凤凰卫视 / TVB / 经典电影 / 纪录片)"]
+        C4["BurningC4 & Guovin IPv4 源\n(国内 1080P/4K 高清保底)"]
+        YANG["YanG-Gather 聚合源池\n(多省份高码率 IPv4 稳定源)"]
+        CUSTOM["iptv-org 全球分类/国别源\n(News / Science / Sport / HK / TW / ZHO)"]
     end
 
     subgraph Pipeline ["GitHub Actions 运行时处理流程"]
@@ -139,10 +139,10 @@ flowchart TD
 
 ### 4.1 声明式频道编目规范 (`channels_manifest.json`)
 
-系统允许用户仅通过编辑 JSON 清单，完全控制频道的大纲、分类、包含频道及匹配权重。
+系统允许用户通过声明式 JSON 清单，完全控制上游源池、频道大纲、分组归类、台标及正则命中规则。当前清单已收录 **58 个精选频道**，涵盖央视、卫视、港澳台及国际优质 FTA 频道。
 
 ```json
-// config/channels_manifest.json
+// config/iptv/channels_manifest.json
 {
   "settings": {
     "max_lines_per_channel": 4,
@@ -155,53 +155,73 @@ flowchart TD
     ],
     "default_logo_base": "https://live.fanmingming.com/tv/"
   },
+  "upstream_sources": [
+    { "name": "FanMingMing-ITV-IPv4", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/itv.m3u", "type": "m3u", "ipv4_verified": true },
+    { "name": "BurningC4-TV-IPV4", "url": "https://raw.githubusercontent.com/BurningC4/Chinese-IPTV/master/TV-IPV4.m3u", "type": "m3u", "ipv4_verified": true },
+    { "name": "Guovin-IPv4", "url": "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u", "type": "m3u", "ipv4_verified": true },
+    { "name": "YanG-Gather", "url": "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u", "type": "m3u", "ipv4_verified": false },
+    { "name": "iptv-org-hk", "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u", "type": "m3u", "ipv4_verified": false },
+    { "name": "iptv-org-zho", "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/zho.m3u", "type": "m3u", "ipv4_verified": false },
+    { "name": "iptv-org-news", "url": "https://iptv-org.github.io/iptv/categories/news.m3u", "type": "m3u", "ipv4_verified": false },
+    { "name": "iptv-org-tw", "url": "https://iptv-org.github.io/iptv/countries/tw.m3u", "type": "m3u", "ipv4_verified": false },
+    { "name": "iptv-org-science", "url": "https://iptv-org.github.io/iptv/categories/science.m3u", "type": "m3u", "ipv4_verified": false },
+    { "name": "iptv-org-sport", "url": "https://iptv-org.github.io/iptv/categories/sport.m3u", "type": "m3u", "ipv4_verified": false }
+  ],
   "groups": [
     {
       "name": "央视频道",
       "channels": [
-        { "id": "CCTV1", "name": "CCTV-1 综合", "match": ".*CCTV-?1(?!\\d).*", "logo": "CCTV1.png" },
-        { "id": "CCTV2", "name": "CCTV-2 财经", "match": ".*CCTV-?2(?!\\d).*", "logo": "CCTV2.png" },
-        { "id": "CCTV3", "name": "CCTV-3 综艺", "match": ".*CCTV-?3(?!\\d).*", "logo": "CCTV3.png" },
-        { "id": "CCTV4", "name": "CCTV-4 中文国际", "match": ".*CCTV-?4(?!\\d).*", "logo": "CCTV4.png" },
-        { "id": "CCTV5", "name": "CCTV-5 体育", "match": ".*CCTV-?5(?!\\+).*", "logo": "CCTV5.png" },
-        { "id": "CCTV5P", "name": "CCTV-5+ 体育赛事", "match": ".*CCTV-?5\\+.*", "logo": "CCTV5Plus.png" },
-        { "id": "CCTV6", "name": "CCTV-6 电影", "match": ".*CCTV-?6(?!\\d).*", "logo": "CCTV6.png" },
-        { "id": "CCTV13", "name": "CCTV-13 新闻", "match": ".*CCTV-?13.*", "logo": "CCTV13.png" },
-        { "id": "CCTV4K", "name": "CCTV-4K 超高清", "match": ".*CCTV-?4K.*", "logo": "CCTV4K.png" }
+        /* 覆盖 CCTV 1~17、CCTV-4K 超高清、CCTV-8K 超高清 (共 19 个频道) */
+        { "name": "CCTV-1 综合", "tvg_id": "CCTV1", "tvg_name": "CCTV-1 综合", "logo": "CCTV1.png", "match_patterns": ["(?i)cctv[-_\\s]?1(?!\\d)", "CCTV-1\\s*综合"] },
+        { "name": "CCTV-5 体育", "tvg_id": "CCTV5", "tvg_name": "CCTV-5 体育", "logo": "CCTV5.png", "match_patterns": ["(?i)cctv[-_\\s]?5(?!\\+|\\d)", "CCTV-5\\s*体育(?!赛事)"] },
+        { "name": "CCTV-13 新闻", "tvg_id": "CCTV13", "tvg_name": "CCTV-13 新闻", "logo": "CCTV13.png", "match_patterns": ["(?i)cctv[-_\\s]?13(?!\\d)", "CCTV-13\\s*新闻"] },
+        { "name": "CCTV-4K 超高清", "tvg_id": "CCTV4K", "tvg_name": "CCTV-4K 超高清", "logo": "CCTV4K.png", "match_patterns": ["(?i)cctv[-_\\s]?4k", "CCTV-4K\\s*超高清"] }
       ]
     },
     {
       "name": "卫视频道",
       "channels": [
-        { "id": "HNTV", "name": "湖南卫视", "match": ".*湖南卫视.*", "logo": "湖南卫视.png" },
-        { "id": "ZJTV", "name": "浙江卫视", "match": ".*浙江卫视.*", "logo": "浙江卫视.png" },
-        { "id": "JSTV", "name": "江苏卫视", "match": ".*江苏卫视.*", "logo": "江苏卫视.png" },
-        { "id": "DFTV", "name": "东方卫视", "match": ".*东方卫视.*", "logo": "东方卫视.png" },
-        { "id": "BJTV", "name": "北京卫视", "match": ".*北京卫视.*", "logo": "北京卫视.png" },
-        { "id": "GDTV", "name": "广东卫视", "match": ".*广东卫视.*", "logo": "广东卫视.png" }
+        /* 覆盖全国主流一线省级卫视 (湖南、浙江、江苏、东方、北京、广东、深圳、山东等共 15 个频道) */
+        { "name": "湖南卫视", "tvg_id": "Hunan", "tvg_name": "湖南卫视", "logo": "湖南卫视.png", "match_patterns": ["湖南卫视"] },
+        { "name": "浙江卫视", "tvg_id": "Zhejiang", "tvg_name": "浙江卫视", "logo": "浙江卫视.png", "match_patterns": ["浙江卫视"] },
+        { "name": "东方卫视", "tvg_id": "Dragon", "tvg_name": "东方卫视", "logo": "东方卫视.png", "match_patterns": ["东方卫视", "上海东方卫视"] }
       ]
     },
     {
       "name": "港澳台精选",
       "channels": [
-        { "id": "PHOENIX_ZH", "name": "凤凰中文", "match": ".*凤凰.*(中文|卫视).*", "logo": "凤凰中文.png" },
-        { "id": "PHOENIX_INFO", "name": "凤凰资讯", "match": ".*凤凰.*资讯.*", "logo": "凤凰资讯.png" },
-        { "id": "PHOENIX_MOV", "name": "凤凰电影", "match": ".*凤凰.*电影.*", "logo": "凤凰电影.png" },
-        { "id": "TVB_JADE", "name": "翡翠台 (TVB)", "match": ".*(翡翠台|TVB Jade).*", "logo": "翡翠台.png" },
-        { "id": "TVB_PEARL", "name": "明珠台 (TVB)", "match": ".*(明珠台|TVB Pearl).*", "logo": "明珠台.png" }
+        /* 覆盖凤凰卫视全系、TVB 翡翠台、香港电台以及台湾优质新闻台 (共 9 个频道) */
+        { "name": "凤凰中文", "tvg_id": "PHOENIX_ZH", "tvg_name": "凤凰卫视中文台", "logo": "凤凰中文.png", "match_patterns": ["凤凰中文", "凤凰卫视中文台", "(?i)phoenix.*chinese"] },
+        { "name": "凤凰资讯", "tvg_id": "PHOENIX_INFO", "tvg_name": "凤凰卫视资讯台", "logo": "凤凰资讯.png", "match_patterns": ["凤凰资讯", "凤凰卫视资讯台", "(?i)phoenix.*info"] },
+        { "name": "翡翠台 (TVB)", "tvg_id": "TVB_JADE", "tvg_name": "翡翠台", "logo": "翡翠台.png", "match_patterns": ["翡翠台", "(?i)tvb.*jade", "(?i)jade.*tvb"] },
+        { "name": "港台电视 31", "tvg_id": "RTHK31", "tvg_name": "港台电视31", "logo": "港台电视31.png", "match_patterns": ["港台电视31", "港台电视 31", "(?i)rthk.*31"] },
+        { "name": "TVBS 新闻", "tvg_id": "TVBS_NEWS", "tvg_name": "TVBS 新闻台", "logo": "TVBS.png", "match_patterns": ["(?i)tvbs.*(新闻|新聞|news)", "TVBS\\s*(新闻|新聞)"] },
+        { "name": "中天新闻", "tvg_id": "CTI_NEWS", "tvg_name": "中天新闻台", "logo": "中天新闻.png", "match_patterns": ["(?i)(中天新闻|中天新聞|cti.*news)"] },
+        { "name": "东森新闻", "tvg_id": "EBC_NEWS", "tvg_name": "东森新闻台", "logo": "东森新闻.png", "match_patterns": ["(?i)(东森新闻|東森新聞|ebc.*news)"] }
       ]
     },
     {
       "name": "国际与纪录片",
       "channels": [
-        { "id": "DISCOVERY", "name": "探索频道", "match": ".*(Discovery|探索).*", "logo": "Discovery.png" },
-        { "id": "NATGEO", "name": "国家地理", "match": ".*(National Geographic|国家地理).*", "logo": "NationalGeographic.png" },
-        { "id": "HBO", "name": "HBO 高清", "match": ".*HBO.*", "logo": "HBO.png" },
-        { "id": "CNN", "name": "CNN International", "match": ".*CNN.*", "logo": "CNN.png" }
+        /* 覆盖全球顶尖 FTA 免版权时政、商业财经、自然科学与户外探险频道 (共 14 个频道) */
+        { "name": "CGTN", "tvg_id": "CGTN", "tvg_name": "CGTN 英语", "logo": "CGTN.png", "match_patterns": ["(?i)\\bcgtn\\b(?!.*doc)", "CGTN\\s*英语"] },
+        { "name": "国家地理", "tvg_id": "NAT_GEO", "tvg_name": "国家地理", "logo": "国家地理.png", "match_patterns": ["国家地理", "(?i)national\\s*geo"] },
+        { "name": "探索频道", "tvg_id": "DISCOVERY", "tvg_name": "探索频道", "logo": "探索频道.png", "match_patterns": ["探索频道", "(?i)discovery"] },
+        { "name": "NHK World", "tvg_id": "NHK_WORLD", "tvg_name": "NHK World Japan", "logo": "NHKWorld.png", "match_patterns": ["(?i)nhk\\s*world", "NHK\\s*世界"] },
+        { "name": "CNA (亚洲新闻台)", "tvg_id": "CNA", "tvg_name": "CNA (Channel NewsAsia)", "logo": "CNA.png", "match_patterns": ["(?i)\\bcna\\b(?!.*doc)", "(?i)channel\\s*news\\s*asia", "新加坡亚洲新闻"] },
+        { "name": "France 24 英语", "tvg_id": "FRANCE24_EN", "tvg_name": "France 24 (English)", "logo": "France24.png", "match_patterns": ["(?i)france\\s*24.*(en|english)", "(?i)france\\s*24\\s*\\(en\\)"] },
+        { "name": "DW English (德国之声)", "tvg_id": "DW_EN", "tvg_name": "DW English", "logo": "DW.png", "match_patterns": ["(?i)dw\\s*english", "(?i)\\bdw\\b.*(en|english)", "德国之声"] },
+        { "name": "Al Jazeera 英语", "tvg_id": "AL_JAZEERA_EN", "tvg_name": "Al Jazeera (English)", "logo": "AlJazeera.png", "match_patterns": ["(?i)al\\s*jazeera.*(en|english)", "半岛电视台"] },
+        { "name": "Bloomberg TV (彭博财经)", "tvg_id": "BLOOMBERG", "tvg_name": "Bloomberg Television", "logo": "Bloomberg.png", "match_patterns": ["(?i)bloomberg(\\s*television|\\s*tv)?", "彭博财经"] },
+        { "name": "Sky News (天空新闻)", "tvg_id": "SKY_NEWS", "tvg_name": "Sky News", "logo": "SkyNews.png", "match_patterns": ["(?i)sky\\s*news(?!.*sport|.*arabia)", "天空新闻"] },
+        { "name": "NASA TV (美国宇航局)", "tvg_id": "NASA_TV", "tvg_name": "NASA TV", "logo": "NASA.png", "match_patterns": ["(?i)nasa\\s*(tv|media|public|uhd)", "NASA\\s*电视台"] },
+        { "name": "Red Bull TV", "tvg_id": "RED_BULL_TV", "tvg_name": "Red Bull TV", "logo": "RedBull.png", "match_patterns": ["(?i)red\\s*bull\\s*tv", "红牛电视"] },
+        { "name": "Arirang TV", "tvg_id": "ARIRANG_TV", "tvg_name": "Arirang TV", "logo": "Arirang.png", "match_patterns": ["(?i)arirang(\\s*tv)?", "阿里郎"] }
       ]
     }
   ]
 }
+```
 ```
 
 > [!TIP]
@@ -250,38 +270,110 @@ flowchart TD
 
 ---
 
-## 4.3 成果物交付契约 (Artifact Output Contract)
+## 4.3 成果物交付契约与永久订阅直链 (Artifact Output & Subscription URLs)
 
-构建脚本输出双重静态产物，托管至 GitHub Gist（通过 GitHub Actions 环境变量 `GIST_TOKEN` 授权推送更新）：
+构建脚本输出双重静态产物，托管至 GitHub Gist（通过 GitHub Actions 环境变量 `GIST_TOKEN` 与 `GIST_ID` 授权推送每日更新）。
 
-#### 格式一：`live_custom.m3u`（标准扩展 M3U，纯 IPv4 直链/CDN）
+### 4.3.1 成果物文件规范
+
+#### 格式一：`live_custom.m3u`（标准扩展 M3U，纯 IPv4 直链/CDN，含完整台标与 EPG 节目单）
 ```m3u
 # config/live_custom.m3u
 #EXTM3U x-tvg-url="https://live.fanmingming.com/e.xml,https://epg.112114.xyz/pp.xml"
 #EXTINF:-1 tvg-id="CCTV1" tvg-name="CCTV-1 综合" tvg-logo="https://live.fanmingming.com/tv/CCTV1.png" group-title="央视频道",CCTV-1 综合
-http://live-play.cctv.cn/live/cctv1.m3u8
-#EXTINF:-1 tvg-id="CCTV1" tvg-name="CCTV-1 综合" tvg-logo="https://live.fanmingming.com/tv/CCTV1.png" group-title="央视频道",CCTV-1 综合 (备用1)
-http://hw-m-l.cztv.com/channels/cctv1.m3u8
-#EXTINF:-1 tvg-id="PHOENIX_ZH" tvg-name="凤凰中文" tvg-logo="https://live.fanmingming.com/tv/凤凰中文.png" group-title="港澳台精选",凤凰中文
+http://111.13.134.20/live/cctv1.m3u8
+#EXTINF:-1 tvg-id="PHOENIX_ZH" tvg-name="凤凰卫视中文台" tvg-logo="https://live.fanmingming.com/tv/凤凰中文.png" group-title="港澳台精选",凤凰中文
 https://live.phoenixtv.com/stream/zh.m3u8
+#EXTINF:-1 tvg-id="CNA" tvg-name="CNA (Channel NewsAsia)" tvg-logo="https://live.fanmingming.com/tv/CNA.png" group-title="国际与纪录片",CNA (亚洲新闻台)
+https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43a7bb6a224ba2b3056e/hls/live/channelNewsAsia/index.m3u8
 ```
 
-#### 格式二：`live_custom.txt`（传统极简 TXT，纯 IPv4 直链/CDN）
+#### 格式二：`live_custom.txt`（传统极简 TXT，纯 IPv4 直链/CDN，单台多线路逗号连续追加）
 ```txt
 # config/live_custom.txt
 央视频道,#genre#
-CCTV-1 综合,http://live-play.cctv.cn/live/cctv1.m3u8
-CCTV-1 综合,http://hw-m-l.cztv.com/channels/cctv1.m3u8
-CCTV-2 财经,http://live-play.cctv.cn/live/cctv2.m3u8
+CCTV-1 综合,http://111.13.134.20/live/cctv1.m3u8
+CCTV-2 财经,http://111.13.134.20/live/cctv2.m3u8
 
 卫视频道,#genre#
-湖南卫视,http://live.mgtv.com/channels/hntv.m3u8
+湖南卫视,http://183.232.126.10/live/hunan.m3u8
 浙江卫视,http://hw-m-l.cztv.com/channels/zjv.m3u8
 
 港澳台精选,#genre#
 凤凰中文,https://live.phoenixtv.com/stream/zh.m3u8
 翡翠台 (TVB),https://edge.mytvsuper.com/live/jade.m3u8
+TVBS 新闻,https://tvbs-live.cdn.hinet.net/live/tvbs_news.m3u8
+
+国际与纪录片,#genre#
+CNA (亚洲新闻台),https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43a7bb6a224ba2b3056e/hls/live/channelNewsAsia/index.m3u8
+France 24 英语,https://stream.france24.com/live/en.m3u8
+NASA TV (美国宇航局),https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8
 ```
+
+---
+
+### 4.3.2 永久订阅与下载直链 (Permanent Subscription & Download URLs)
+
+在 GitHub Actions 流水线中配置了 `GIST_TOKEN` 与 `GIST_ID` 后，编译出的订阅源通过 GitHub Gist 静态托管，具备**“一次配置、终身有效、每日静默自愈”**的特性。
+
+#### 1. 电视端主要永久订阅直链 (Primary Gist RAW URLs)
+> 替换参数说明：`<OWNER>` 为 GitHub 组织或用户名（本项目为 `TREYWANGCQU`），`<GIST_ID>` 为配置的专属 GitHub Gist ID。
+
+* **M3U 永久订阅直链 (强烈推荐，含台标与 EPG)**：
+  ```http
+  https://gist.githubusercontent.com/<OWNER>/<GIST_ID>/raw/live_custom.m3u
+  ```
+  *(免用户名通用简短直链)*：
+  ```http
+  https://gist.githubusercontent.com/raw/<GIST_ID>/live_custom.m3u
+  ```
+* **TXT 永久订阅直链 (经典简易格式)**：
+  ```http
+  https://gist.githubusercontent.com/<OWNER>/<GIST_ID>/raw/live_custom.txt
+  ```
+  *(免用户名通用简短直链)*：
+  ```http
+  https://gist.githubusercontent.com/raw/<GIST_ID>/live_custom.txt
+  ```
+
+#### 2. 国内免翻墙加速镜像订阅直链 (CN Acceleration Mirrors)
+若电视所处网络对 `gist.githubusercontent.com` 存在波动或未配置透明代理分流，可直接使用以下国内 CDN 加速代理直链：
+* **M3U 国内加速直链**：
+  ```http
+  https://ghproxy.net/https://gist.githubusercontent.com/<OWNER>/<GIST_ID>/raw/live_custom.m3u
+  ```
+* **TXT 国内加速直链**：
+  ```http
+  https://ghproxy.net/https://gist.githubusercontent.com/<OWNER>/<GIST_ID>/raw/live_custom.txt
+  ```
+
+#### 3. 离线构件包手动下载 (CI Artifacts Bundle)
+若需要手动单次下载或离线分发 M3U/TXT 文件：
+1. 访问本仓库 GitHub 页面：`https://github.com/TREYWANGCQU/androidTV/actions`；
+2. 点击最新的 **Sync mytv Pure IPv4 IPTV Subscription** 工作流运行记录；
+3. 滑动至页面底部的 **Artifacts** 区域；
+4. 点击下载 **`iptv-subscriptions`** 压缩包，解压即可获得最新测速探活生成的 `live_custom.m3u`、`live_custom.txt` 与详细审计报告 `channels_stat.json`。
+
+---
+
+### 4.3.3 电视端 (`mytv-android`) 网页管理端导入指南
+
+电视机遥控器输入长 URL 极为繁琐，`mytv-android` 原生支持局域网网页远程管理：
+
+1. **获取电视端配置后台地址**：
+   - 打开电视上的 `mytv` 应用；
+   - 按遥控器「设置」键或长按「确认」键呼出全局设置菜单；
+   - 找到「网络配置」或「远程管理 / 网页配置」，屏幕上会弹出局域网访问地址（例如 `http://192.168.1.100:34567`）。
+2. **手机/电脑浏览器访问配置后台**：
+   - 在处于同一局域网（Wi-Fi）的手机或电脑浏览器中输入上述 IP 与端口；
+   - 进入 mytv 网页端设置管理后台。
+3. **录入永久订阅源**：
+   - 在「直播源配置 (Custom Live URL)」输入框中，粘贴上方提供的 **M3U 永久订阅直链**（或国内加速直链）；
+   - 在「EPG 接口」一栏可填入 `https://live.fanmingming.com/e.xml`；
+   - 点击「保存并立即同步」。
+4. **即时生效与后续静默运维**：
+   - 电视端界面会瞬间刷新并展示全部 58 个精心调优的纯 IPv4 频道；
+   - 此后无需再次配置，每天凌晨 04:00 GitHub Actions 云端将自动探活清洗并推送最新线路至 Gist，电视端打开即享最优质低延迟直播。
 
 ---
 
