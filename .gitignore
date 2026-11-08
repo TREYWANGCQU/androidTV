@@ -1,3 +1,4 @@
-apk/
+apk/*
+!apk/.gitkeep
 *.pdf
 scratch/
