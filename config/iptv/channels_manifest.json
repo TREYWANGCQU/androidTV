@@ -48,6 +48,30 @@
       "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/zho.m3u",
       "type": "m3u",
       "ipv4_verified": false
+    },
+    {
+      "name": "iptv-org-news",
+      "url": "https://iptv-org.github.io/iptv/categories/news.m3u",
+      "type": "m3u",
+      "ipv4_verified": false
+    },
+    {
+      "name": "iptv-org-tw",
+      "url": "https://iptv-org.github.io/iptv/countries/tw.m3u",
+      "type": "m3u",
+      "ipv4_verified": false
+    },
+    {
+      "name": "iptv-org-science",
+      "url": "https://iptv-org.github.io/iptv/categories/science.m3u",
+      "type": "m3u",
+      "ipv4_verified": false
+    },
+    {
+      "name": "iptv-org-sport",
+      "url": "https://iptv-org.github.io/iptv/categories/sport.m3u",
+      "type": "m3u",
+      "ipv4_verified": false
     }
   ],
   "groups": [
@@ -410,6 +434,27 @@
           "tvg_name": "港台电视32",
           "logo": "港台电视32.png",
           "match_patterns": ["港台电视32", "港台电视 32", "(?i)rthk.*32"]
+        },
+        {
+          "name": "TVBS 新闻",
+          "tvg_id": "TVBS_NEWS",
+          "tvg_name": "TVBS 新闻台",
+          "logo": "TVBS.png",
+          "match_patterns": ["(?i)tvbs.*(新闻|新聞|news)", "TVBS\\s*(新闻|新聞)"]
+        },
+        {
+          "name": "中天新闻",
+          "tvg_id": "CTI_NEWS",
+          "tvg_name": "中天新闻台",
+          "logo": "中天新闻.png",
+          "match_patterns": ["(?i)(中天新闻|中天新聞|cti.*news)"]
+        },
+        {
+          "name": "东森新闻",
+          "tvg_id": "EBC_NEWS",
+          "tvg_name": "东森新闻台",
+          "logo": "东森新闻.png",
+          "match_patterns": ["(?i)(东森新闻|東森新聞|ebc.*news)"]
         }
       ]
     },
@@ -450,6 +495,69 @@
           "tvg_name": "NHK World Japan",
           "logo": "NHKWorld.png",
           "match_patterns": ["(?i)nhk\\s*world", "NHK\\s*世界"]
+        },
+        {
+          "name": "CNA (亚洲新闻台)",
+          "tvg_id": "CNA",
+          "tvg_name": "CNA (Channel NewsAsia)",
+          "logo": "CNA.png",
+          "match_patterns": ["(?i)\\bcna\\b(?!.*doc)", "(?i)channel\\s*news\\s*asia", "新加坡亚洲新闻"]
+        },
+        {
+          "name": "France 24 英语",
+          "tvg_id": "FRANCE24_EN",
+          "tvg_name": "France 24 (English)",
+          "logo": "France24.png",
+          "match_patterns": ["(?i)france\\s*24.*(en|english)", "(?i)france\\s*24\\s*\\(en\\)"]
+        },
+        {
+          "name": "DW English (德国之声)",
+          "tvg_id": "DW_EN",
+          "tvg_name": "DW English",
+          "logo": "DW.png",
+          "match_patterns": ["(?i)dw\\s*english", "(?i)\\bdw\\b.*(en|english)", "德国之声"]
+        },
+        {
+          "name": "Al Jazeera 英语",
+          "tvg_id": "AL_JAZEERA_EN",
+          "tvg_name": "Al Jazeera (English)",
+          "logo": "AlJazeera.png",
+          "match_patterns": ["(?i)al\\s*jazeera.*(en|english)", "半岛电视台"]
+        },
+        {
+          "name": "Bloomberg TV (彭博财经)",
+          "tvg_id": "BLOOMBERG",
+          "tvg_name": "Bloomberg Television",
+          "logo": "Bloomberg.png",
+          "match_patterns": ["(?i)bloomberg(\\s*television|\\s*tv)?", "彭博财经"]
+        },
+        {
+          "name": "Sky News (天空新闻)",
+          "tvg_id": "SKY_NEWS",
+          "tvg_name": "Sky News",
+          "logo": "SkyNews.png",
+          "match_patterns": ["(?i)sky\\s*news(?!.*sport|.*arabia)", "天空新闻"]
+        },
+        {
+          "name": "NASA TV (美国宇航局)",
+          "tvg_id": "NASA_TV",
+          "tvg_name": "NASA TV",
+          "logo": "NASA.png",
+          "match_patterns": ["(?i)nasa\\s*(tv|media|public|uhd)", "NASA\\s*电视台"]
+        },
+        {
+          "name": "Red Bull TV",
+          "tvg_id": "RED_BULL_TV",
+          "tvg_name": "Red Bull TV",
+          "logo": "RedBull.png",
+          "match_patterns": ["(?i)red\\s*bull\\s*tv", "红牛电视"]
+        },
+        {
+          "name": "Arirang TV",
+          "tvg_id": "ARIRANG_TV",
+          "tvg_name": "Arirang TV",
+          "logo": "Arirang.png",
+          "match_patterns": ["(?i)arirang(\\s*tv)?", "阿里郎"]
         }
       ]
     }
